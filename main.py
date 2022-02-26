@@ -1,0 +1,44 @@
+from numpy import *
+from data import *
+from neural_network import *
+from minimize import min
+from plot import * 
+from table import * 
+import timeit
+
+PLOT_DPI = 1000
+
+#Start minimizing with given initial weights
+start = timeit.default_timer()
+weights = min(W0)
+#weights = loadtxt("weights2.txt", delimiter=",")
+
+stop = timeit.default_timer()
+time = stop - start
+second = round(time % 60)
+hours = round(time / 3600)
+minute = round((time%3600) / 60)
+
+print(f"Minimizing time: {hours}h-{minute}m-{second}s")
+
+#Process neural network with minimized weights
+print(f"New neural network has error: {error(weights)}")
+Y = []
+Z = []
+
+for x in X:
+    Y.append(NN(weights, x))
+    Z.append(analytic(x))
+
+NN_plot(Y, Z, PLOT_DPI)#Draw neural network plot
+Err_plot(Y, Z, PLOT_DPI)#Draw error plot
+createTable(Y, Z)
+
+#Check minimize result by plotting
+I = []
+F = []
+for x in X:
+  I.append(integration(x, lambda a: NN(weights, a)))
+  F.append(right_eq(x))
+I_plot(I, F, PLOT_DPI)
+
